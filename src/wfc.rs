@@ -1,25 +1,28 @@
 use rand::prelude::*;
 use rand::distributions::WeightedIndex;
+use serde::{Deserialize, Serialize};
 
-#[derive(Clone)]
+use crate::tileset::Tileset;
+
+#[derive(Clone, Serialize, Deserialize)]
 pub struct Rule {
     pub direction: usize,
     pub border_type: i32
 }
 
-#[derive(Clone)]
+#[derive(Clone, Serialize, Deserialize)]
 pub struct Tile {
     pub weight: u32,
     pub id: i32,
-    pub value: char,
+    pub value: u32, // Position of the tile in tile_sheet image 
     pub rules: Vec<Rule>
 }
 
 #[derive(Clone)]
-struct Frame {
+pub struct Frame {
     coord: [usize; 2],
-    collapsed: bool,
-    options: Vec<Tile>
+    pub collapsed: bool,
+    pub options: Vec<Tile>
 }
 impl Frame {
     pub fn collapse(&mut self, new_options: Vec<Tile>) {
@@ -36,16 +39,16 @@ pub struct WFC {
 }
 
 impl WFC {
-    pub fn new(tiles: Vec<Tile>, size: usize) -> Self {
+    pub fn new(tileset: Tileset, size: usize) -> Self {
         let mut board = Vec::new();
         for x in 0..size {
             board.push(Vec::new());
             for y in 0..size {
-                board[x].push(Frame {coord: [x,y], collapsed: false, options: tiles.clone()});
+                board[x].push(Frame {coord: [x,y], collapsed: false, options: tileset.tiles.clone()});
             }
         }
         
-        return WFC { tiles: tiles, board: board, done: false, size: size};
+        return WFC { tiles: tileset.tiles, board: board, done: false, size: size};
     }
     fn propagate(&mut self){
         for (x, line) in self.board.clone().iter().enumerate() {
@@ -162,24 +165,13 @@ impl WFC {
             return None; // All Frames are collapsed
         }
     }
-    pub fn next_step(&mut self) {
-        self.collapse();
-        self.propagate();
-    }
-    pub fn print(&self) {
-        println!("--------------------");
-        for line in self.board.clone() {
-            let v: Vec<char> = line.into_iter().map(|frame| {
-                    if frame.collapsed {
-                        frame.options[0].value
-                    } else {
-                        ' '
-                    }
-                }).collect();
-            let s: String = v.into_iter().collect();
-            println!("{}", s);
+    pub fn resolve(&mut self) -> Vec<Vec<Frame>> {
+        while !self.done {
+            self.collapse();
+            self.propagate();
         }
-        println!("--------------------");
+        return self.board.clone();
+
     }
 
 }
