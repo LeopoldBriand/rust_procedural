@@ -1,0 +1,120 @@
+{
+    "name": "Simple",
+    "tiles": [
+        {
+            "weight": 10,
+            "id": 0,
+            "value": 0,
+            "rules": [
+                {
+                    "direction": 0,
+                    "border_type": 0
+                },
+                {
+                    "direction": 1,
+                    "border_type": 0
+                },
+                {
+                    "direction": 2,
+                    "border_type": 0
+                },
+                {
+                    "direction": 3,
+                    "border_type": 0
+                }
+            ]
+        },
+        {
+            "weight": 1,
+            "id": 1,
+            "value": 1,
+            "rules": [
+                {
+                    "direction": 0,
+                    "border_type": 1
+                },
+                {
+                    "direction": 1,
+                    "border_type": 1
+                },
+                {
+                    "direction": 2,
+                    "border_type": 0
+                },
+                {
+                    "direction": 3,
+                    "border_type": 1
+                }
+            ]
+        },
+        {
+            "weight": 1,
+            "id": 2,
+            "value": 2,
+            "rules": [
+                {
+                    "direction": 0,
+                    "border_type": 1
+                },
+                {
+                    "direction": 1,
+                    "border_type": 1
+                },
+                {
+                    "direction": 2,
+                    "border_type": 1
+                },
+                {
+                    "direction": 3,
+                    "border_type": 0
+                }
+            ]
+        },
+        {
+            "weight": 1,
+            "id": 3,
+            "value": 3,
+            "rules": [
+                {
+                    "direction": 0,
+                    "border_type": 0
+                },
+                {
+                    "direction": 1,
+                    "border_type": 1
+                },
+                {
+                    "direction": 2,
+                    "border_type": 1
+                },
+                {
+                    "direction": 3,
+                    "border_type": 1
+                }
+            ]
+        },
+        {
+            "weight": 1,
+            "id": 4,
+            "value": 4,
+            "rules": [
+                {
+                    "direction": 0,
+                    "border_type": 1
+                },
+                {
+                    "direction": 1,
+                    "border_type": 0
+                },
+                {
+                    "direction": 2,
+                    "border_type": 1
+                },
+                {
+                    "direction": 3,
+                    "border_type": 1
+                }
+            ]
+        }
+    ]
+}

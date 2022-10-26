@@ -1,49 +1,28 @@
 mod wfc;
-use wfc::{Tile, Rule, WFC};
+use wfc::{WFC, Frame};
+mod tileset;
+use tileset::Tileset;
 fn main() {
+    let tilesheet = vec!['O', '⊢', '⊣','⊤', '⊥'];
+    let tileset :Tileset = Tileset::new("./tilesets/simple.json".to_string());
+    let size = 30; 
+    let mut wave_function_collapse = WFC::new(tileset, size);
+    print(tilesheet, wave_function_collapse.resolve());
+    
+}
 
-    let mut tiles: Vec<Tile> = Vec::new();
-
-    // Setup 'BLANK' Tile
-    tiles.push(Tile { weight: 10, id: 0, value: 'O', rules: vec![
-        Rule{direction: 0, border_type: 0},
-        Rule{direction: 1, border_type: 0},
-        Rule{direction: 2, border_type: 0},
-        Rule{direction: 3, border_type: 0},
-    ] });
-    // Setup 'EAST' Tile
-    tiles.push(Tile { weight: 1, id: 1, value: '⊢', rules: vec![
-        Rule{direction: 0, border_type: 1},
-        Rule{direction: 1, border_type: 1},
-        Rule{direction: 2, border_type: 0},
-        Rule{direction: 3, border_type: 1},
-    ] });
-    // Setup 'WEST' Tile
-    tiles.push(Tile { weight: 1, id: 2, value: '⊣', rules: vec![
-        Rule{direction: 0, border_type: 1},
-        Rule{direction: 1, border_type: 1},
-        Rule{direction: 2, border_type: 1},
-        Rule{direction: 3, border_type: 0},
-    ] });
-    // Setup 'SOUTH' Tile
-    tiles.push(Tile { weight: 1, id: 3, value: '⊤', rules: vec![
-        Rule{direction: 0, border_type: 0},
-        Rule{direction: 1, border_type: 1},
-        Rule{direction: 2, border_type: 1},
-        Rule{direction: 3, border_type: 1},
-    ] });
-    // Setup 'NORTH' Tile
-    tiles.push(Tile { weight: 1, id: 3, value: '⊥', rules: vec![
-        Rule{direction: 0, border_type: 1},
-        Rule{direction: 1, border_type: 0},
-        Rule{direction: 2, border_type: 1},
-        Rule{direction: 3, border_type: 1},
-    ] });
-
-    let size = 30;
-    let mut wave_function_collapse = WFC::new(tiles, size);
-    while !wave_function_collapse.done {
-        wave_function_collapse.next_step();
+fn print(tilesheet: Vec<char>, board: Vec<Vec<Frame>>) {
+    println!("--------------------");
+    for line in board.clone() {
+        let v: Vec<char> = line.into_iter().map(|frame| {
+                if frame.collapsed {
+                    tilesheet[frame.options[0].value as usize]
+                } else {
+                    ' '
+                }
+            }).collect();
+        let s: String = v.into_iter().collect();
+        println!("{}", s);
     }
-    wave_function_collapse.print();
+    println!("--------------------");
 }
