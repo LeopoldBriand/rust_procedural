@@ -7,7 +7,7 @@ use crate::tileset::Tileset;
 #[derive(Clone, Serialize, Deserialize)]
 pub struct Rule {
     pub direction: usize,
-    pub border_type: i32
+    pub border_type: String
 }
 
 #[derive(Clone, Serialize, Deserialize)]
@@ -61,13 +61,13 @@ impl WFC {
                             Some(coord) => {
                                 let neighbours_options: Vec<Tile> = self.board[coord[0]][coord[1]].options.clone();
                                 let opposite_direction = self.get_oppposite_direction(direction);
-                                let neighbours_authorized_border_types: Vec<i32> = neighbours_options.into_iter().map(|t| {
-                                        t.rules[opposite_direction].border_type
+                                let neighbours_authorized_border_types: Vec<String> = neighbours_options.into_iter().map(|t| {
+                                        t.rules[opposite_direction].border_type.clone()
                                     }).collect();
                                 // Check if every options of frame if still possible
                                 let mut index_to_remove = Vec::new();
                                 for (index, option) in self.board[x][y].options.clone().into_iter().enumerate() {
-                                    if !(neighbours_authorized_border_types.iter().any(|&bt| bt == option.rules[direction].border_type)) {
+                                    if !(neighbours_authorized_border_types.iter().any(|bt| bt.eq(&option.rules[direction].border_type))) {
                                         // Remove unauthorized option
                                         index_to_remove.push(index);
                                     } 

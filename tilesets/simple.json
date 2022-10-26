@@ -8,19 +8,19 @@
             "rules": [
                 {
                     "direction": 0,
-                    "border_type": 0
+                    "border_type":  "water"
                 },
                 {
                     "direction": 1,
-                    "border_type": 0
+                    "border_type":  "water"
                 },
                 {
                     "direction": 2,
-                    "border_type": 0
+                    "border_type":  "water"
                 },
                 {
                     "direction": 3,
-                    "border_type": 0
+                    "border_type":  "water"
                 }
             ]
         },
@@ -31,19 +31,19 @@
             "rules": [
                 {
                     "direction": 0,
-                    "border_type": 1
+                    "border_type":  "bridge"
                 },
                 {
                     "direction": 1,
-                    "border_type": 1
+                    "border_type":  "bridge"
                 },
                 {
                     "direction": 2,
-                    "border_type": 0
+                    "border_type":  "water"
                 },
                 {
                     "direction": 3,
-                    "border_type": 1
+                    "border_type":  "bridge"
                 }
             ]
         },
@@ -54,19 +54,19 @@
             "rules": [
                 {
                     "direction": 0,
-                    "border_type": 1
+                    "border_type":  "bridge"
                 },
                 {
                     "direction": 1,
-                    "border_type": 1
+                    "border_type":  "bridge"
                 },
                 {
                     "direction": 2,
-                    "border_type": 1
+                    "border_type":  "bridge"
                 },
                 {
                     "direction": 3,
-                    "border_type": 0
+                    "border_type":  "water"
                 }
             ]
         },
@@ -77,19 +77,19 @@
             "rules": [
                 {
                     "direction": 0,
-                    "border_type": 0
+                    "border_type":  "water"
                 },
                 {
                     "direction": 1,
-                    "border_type": 1
+                    "border_type":  "bridge"
                 },
                 {
                     "direction": 2,
-                    "border_type": 1
+                    "border_type":  "bridge"
                 },
                 {
                     "direction": 3,
-                    "border_type": 1
+                    "border_type":  "bridge"
                 }
             ]
         },
@@ -100,19 +100,19 @@
             "rules": [
                 {
                     "direction": 0,
-                    "border_type": 1
+                    "border_type":  "bridge"
                 },
                 {
                     "direction": 1,
-                    "border_type": 0
+                    "border_type":  "water"
                 },
                 {
                     "direction": 2,
-                    "border_type": 1
+                    "border_type":  "bridge"
                 },
                 {
                     "direction": 3,
-                    "border_type": 1
+                    "border_type":  "bridge"
                 }
             ]
         }
