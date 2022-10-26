@@ -32,8 +32,7 @@ pub struct WFC {
     tiles: Vec<Tile>,
     board: Vec<Vec<Frame>>,
     size: usize,
-    pub done: bool,
-    pub tiles_collapsed: i32
+    pub done: bool
 }
 
 impl WFC {
@@ -46,7 +45,7 @@ impl WFC {
             }
         }
         
-        return WFC { tiles: tiles, board: board, done: false, size: size, tiles_collapsed: 0};
+        return WFC { tiles: tiles, board: board, done: false, size: size};
     }
     fn propagate(&mut self){
         for (x, line) in self.board.clone().iter().enumerate() {
@@ -73,7 +72,7 @@ impl WFC {
                                 index_to_remove.sort_by(|a, b| b.cmp(a));
                                 for index in index_to_remove {
                                     self.board[x][y].options.remove(index);
-                                    if self.board[x][y].options.len() == 1 {self.board[x][y].collapsed = true; self.tiles_collapsed+=1; break;} // Not sure about this one ...
+                                    if self.board[x][y].options.len() == 1 {self.board[x][y].collapsed = true; break;} // Not sure about this one ...
                                 }
                             },
                             None => {}
@@ -133,7 +132,6 @@ impl WFC {
                 let chosen_tile = frame.options.clone()[dist.sample(&mut rng)].clone();
                 new_options.push(chosen_tile);
                 frame.collapse(new_options);
-                self.tiles_collapsed +=1;
             },
             None => {self.done = true}
         }

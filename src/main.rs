@@ -44,9 +44,6 @@ fn main() {
     let mut wave_function_collapse = WFC::new(tiles, size);
     while !wave_function_collapse.done {
         wave_function_collapse.next_step();
-        // wave_function_collapse.print();
-
-        println!("{} on {} tiles colapsed",wave_function_collapse.tiles_collapsed, size*size);
     }
     wave_function_collapse.print();
 }
