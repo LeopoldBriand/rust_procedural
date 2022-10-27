@@ -60,7 +60,7 @@ impl WFC {
                         match neighbour {
                             Some(coord) => {
                                 let neighbours_options: Vec<Tile> = self.board[coord[0]][coord[1]].options.clone();
-                                let opposite_direction = self.get_oppposite_direction(direction);
+                                let opposite_direction = self.get_opposite_direction(direction);
                                 let neighbours_authorized_border_types: Vec<String> = neighbours_options.into_iter().map(|t| {
                                         t.rules[opposite_direction].border_type.clone()
                                     }).collect();
@@ -113,7 +113,7 @@ impl WFC {
         }
         return neighbours;
     }
-    fn get_oppposite_direction(&self, direction: usize) -> usize {
+    fn get_opposite_direction(&self, direction: usize) -> usize {
         match direction {
             0 => 1, // north -> south
             1 => 0, // south -> north
@@ -127,31 +127,28 @@ impl WFC {
     fn collapse(&mut self){
         match self.get_lowest_entropy() {
             Some(coord) => {
-                let mut new_options: Vec<Tile> = Vec::new();
-                let frame = &mut self.board[coord[0]][coord[1]];
-                let weights: Vec<u32> = frame.options.clone().into_iter().map(|option| option.weight).collect();
+                let frame = &mut self.board[coord[0]][coord[1]]; // Get frame with coordinates
+                let weights: Vec<u32> = frame.options.iter().map(|option| option.weight).collect(); // Extract weights from frame options
                 let dist = WeightedIndex::new(&weights).unwrap();
                 let mut rng = thread_rng();
-                let chosen_tile = frame.options.clone()[dist.sample(&mut rng)].clone();
-                new_options.push(chosen_tile);
-                frame.collapse(new_options);
+                let chosen_tile = frame.options.clone()[dist.sample(&mut rng)].clone(); // Choice of a random option taking into account the weights
+                frame.collapse(vec![chosen_tile]);
             },
             None => {self.done = true}
         }
     }
     fn get_lowest_entropy(&mut self) -> Option<[usize; 2]> {
-        let mut minimum_entropy = self.tiles.len();
+        let mut minimum_entropy = self.tiles.len(); // Initialize minimal entropy as tileset length
         let mut chosen_frames: Vec<&Frame> = Vec::new();
         for (_i, el) in self.board.iter().enumerate() {
             for (_j, frame) in el.iter().enumerate() {
                 if !frame.collapsed {
                     if frame.options.len() < minimum_entropy {
-                        chosen_frames = Vec::new();
-                        chosen_frames.push(frame);
+                        chosen_frames = vec![frame]; // If a frame as less entropy, reinitialize possible choices
                         minimum_entropy = frame.options.len();
                     }
                     if frame.options.len() == minimum_entropy {
-                        chosen_frames.push(frame);
+                        chosen_frames.push(frame); // If some frame already as the same entropy, push to the possible choices
                     }
                 }
             }
