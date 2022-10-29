@@ -61,17 +61,20 @@ impl WFC {
                     let neighbours:Vec<Option<[usize;2]>> = self.get_tiles_neighbours(frame_coord); // For each of them non collapsed, get neighbours
                     for (direction, neighbour) in neighbours.iter().enumerate() {
                         if let Some(neighbour_coord) = neighbour {
-                            self.remove_tile_options(
+                            let is_some_options_removed = self.remove_tile_options(
                                 direction,
                                 frame_coord,
                                 self.board[neighbour_coord[0]][neighbour_coord[1]].clone());
+                            if is_some_options_removed {
+                                self.propagate(*neighbour_coord);
+                            }
                         }
                     }
                 }
             }
         }
     }
-    fn remove_tile_options(&mut self, direction: usize, frame_coord: [usize;2], neighbour: Frame) {
+    fn remove_tile_options(&mut self, direction: usize, frame_coord: [usize;2], neighbour: Frame) -> bool {
         let opposite_direction = self.get_opposite_direction(direction);
         let mut frame = &mut self.board[frame_coord[0]][frame_coord[1]];
         let neighbour_authorized_border_types: Vec<String> = neighbour.options.into_iter()
@@ -93,7 +96,9 @@ impl WFC {
             )
             .collect();
         if new_options.len() == 0 { panic!("One frame has no option left")} // How to handle that
+        let is_some_options_removed: bool = frame.options.len() > new_options.len(); 
         frame.options = new_options; 
+        return is_some_options_removed;
             
     }
     fn get_tiles_neighbours(&self, coord: [usize; 2]) -> Vec<Option<[usize; 2]>> {
