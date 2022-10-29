@@ -1,3 +1,5 @@
+use std::collections::HashSet;
+
 use rand::prelude::*;
 use rand::distributions::WeightedIndex;
 use serde::{Deserialize, Serialize};
@@ -50,40 +52,49 @@ impl WFC {
         
         return WFC { tiles: tileset.tiles, board: board, done: false, size: size};
     }
-    fn propagate(&mut self){
-        for (x, line) in self.board.clone().iter().enumerate() {
-            for (y, _frame) in line.iter().enumerate() {
-                
-                let neighbours:Vec<Option<[usize;2]>> = self.get_tiles_neighbours([x,y]);
-                for (direction, neighbour) in neighbours.iter().enumerate() { // Get all neighbours options
-                    if !self.board[x][y].collapsed {
-                        match neighbour {
-                            Some(coord) => {
-                                let neighbours_options: Vec<Tile> = self.board[coord[0]][coord[1]].options.clone();
-                                let opposite_direction = self.get_opposite_direction(direction);
-                                let neighbours_authorized_border_types: Vec<String> = neighbours_options.into_iter().map(|t| {
-                                        t.rules[opposite_direction].border_type.clone()
-                                    }).collect();
-                                // Check if every options of frame if still possible
-                                let mut index_to_remove = Vec::new();
-                                for (index, option) in self.board[x][y].options.clone().into_iter().enumerate() {
-                                    if !(neighbours_authorized_border_types.iter().any(|bt| bt.eq(&option.rules[direction].border_type))) {
-                                        // Remove unauthorized option
-                                        index_to_remove.push(index);
-                                    } 
-                                }
-                                index_to_remove.sort_by(|a, b| b.cmp(a));
-                                for index in index_to_remove {
-                                    self.board[x][y].options.remove(index);
-                                    if self.board[x][y].options.len() == 1 {self.board[x][y].collapsed = true; break;} // Not sure about this one ...
-                                }
-                            },
-                            None => {}
+
+    fn propagate(&mut self, coord: [usize; 2]) {
+        let frames_to_propagate:Vec<Option<[usize;2]>> = self.get_tiles_neighbours(coord); // Get collapsed frame neighbours
+        for frame in frames_to_propagate {
+            if let Some(frame_coord) = frame {
+                if !self.board[frame_coord[0]][frame_coord[1]].collapsed {
+                    let neighbours:Vec<Option<[usize;2]>> = self.get_tiles_neighbours(frame_coord); // For each of them non collapsed, get neighbours
+                    for (direction, neighbour) in neighbours.iter().enumerate() {
+                        if let Some(neighbour_coord) = neighbour {
+                            self.remove_tile_options(
+                                direction,
+                                frame_coord,
+                                self.board[neighbour_coord[0]][neighbour_coord[1]].clone());
                         }
                     }
                 }
             }
         }
+    }
+    fn remove_tile_options(&mut self, direction: usize, frame_coord: [usize;2], neighbour: Frame) {
+        let opposite_direction = self.get_opposite_direction(direction);
+        let mut frame = &mut self.board[frame_coord[0]][frame_coord[1]];
+        let neighbour_authorized_border_types: Vec<String> = neighbour.options.into_iter()
+            .map(|t| {
+                    t.rules[opposite_direction].border_type.clone()
+                })
+            .collect::<HashSet<_>>() // Filter to have only uniq border_types
+            .into_iter()
+            .collect();
+        // Filter options of frame if still possible
+        let new_options: Vec<Tile> = frame.options.clone()
+            .into_iter()
+            .filter(|o| (neighbour_authorized_border_types
+                .iter()
+                .any(|bt| {
+                    return bt.eq(&o.rules[direction].border_type)
+                    })
+                )
+            )
+            .collect();
+        if new_options.len() == 0 { panic!("One frame has no option left")} // How to handle that
+        frame.options = new_options; 
+            
     }
     fn get_tiles_neighbours(&self, coord: [usize; 2]) -> Vec<Option<[usize; 2]>> {
         let mut neighbours: Vec<Option<[usize; 2]>> = Vec::new();
@@ -124,7 +135,7 @@ impl WFC {
             }
         }
     }
-    fn collapse(&mut self){
+    fn collapse(&mut self) -> Option<[usize;2]>{
         match self.get_lowest_entropy() {
             Some(coord) => {
                 let frame = &mut self.board[coord[0]][coord[1]]; // Get frame with coordinates
@@ -133,8 +144,12 @@ impl WFC {
                 let mut rng = thread_rng();
                 let chosen_tile = frame.options.clone()[dist.sample(&mut rng)].clone(); // Choice of a random option taking into account the weights
                 frame.collapse(vec![chosen_tile]);
+                return Some(coord)
             },
-            None => {self.done = true}
+            None => {
+                self.done = true;
+                return None;
+            }
         }
     }
     fn get_lowest_entropy(&mut self) -> Option<[usize; 2]> {
@@ -164,8 +179,11 @@ impl WFC {
     }
     pub fn resolve(&mut self) -> Vec<Vec<Frame>> {
         while !self.done {
-            self.collapse();
-            self.propagate();
+            match self.collapse() {
+                Some(coord) => self.propagate(coord),
+                None => {}
+            };
+            
         }
         return self.board.clone();
 
