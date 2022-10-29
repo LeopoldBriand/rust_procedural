@@ -3,7 +3,7 @@ use std::fs::File;
 use std::io::Read;
 use crate::wfc::{Tile};
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Clone)]
 pub struct Tileset {
     pub name: String,
     pub tiles: Vec<Tile>

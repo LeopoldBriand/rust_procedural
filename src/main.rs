@@ -1,17 +1,26 @@
 mod wfc;
+use std::time::Instant;
+
 use wfc::{WFC, Frame};
 mod tileset;
 use tileset::Tileset;
+
 fn main() {
-    let tilesheet = vec!['O', '⊢', '⊣','⊤', '⊥'];
     let tileset :Tileset = Tileset::new("./tilesets/simple.json".to_string());
-    let size = 30; 
-    let mut wave_function_collapse = WFC::new(tileset, size);
-    print(tilesheet, wave_function_collapse.resolve());
+    let loops = vec![10,15,20,25,30,35,40,50,60,70,80,90,100];
+    for (_i, size) in loops.iter().enumerate(){
+        let start = Instant::now();
+        let mut wave_function_collapse = WFC::new(tileset.clone(), *size as usize);
+        wave_function_collapse.resolve();
+        // wave_function_collapse.print();
+        let duration = start.elapsed();
+        println!("Time elapsed in collapsing {} tiles is: {:?}", size*size, duration);
+    }
+    
     
 }
 
-fn print(tilesheet: Vec<char>, board: Vec<Vec<Frame>>) {
+fn _print(tilesheet: Vec<char>, board: Vec<Vec<Frame>>) {
     println!("--------------------");
     for line in board.clone() {
         let v: Vec<char> = line.into_iter().map(|frame| {
